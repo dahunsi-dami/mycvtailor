@@ -26,6 +26,12 @@ nav .user-menu {
 	margin-bottom: 20px;
 }
 
+.user-menu span,
+.user-menu form {
+	display: inline-block;
+	vertical-align: middle;
+}
+
 /* Clear floats for content body in container */
 /* To avoid horizontal stacking of HTML elements
 due to the floats */

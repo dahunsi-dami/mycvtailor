@@ -1,20 +1,12 @@
 {% extends 'main/base.html' %}
 {% block title %}Login{% endblock %}
 {% block content %}
-<div class="login-modal">
+<div class="signup-modal">
 	<span class="close-btn">&times;</span>
 	<form method="post">
-		{% csrf_token %}
-		<div>
-			<label for="id_username">Username:</label>
-			<input type="text" name="username" autofocus="" autocapitalize="none' autocomplete="username" maxlength="150" required="" id="id_username">
-		</div>
-		<div>
-			<label for="id_password">Password:</label>
-			<input type="password" name="password" autocomplete="current-password" required="" id="id_password">
-		</div>
+		{% csrf_token %} {{form}}
 		<p>Have an account? Login <a href="/login">Here</a>!</p>
-		<button type="submit" class="btn-success">Log In</button>
+		<button type="submit" class="btn-success">Sign Up</button>
 	</form>
 </div>
 {% endblock %}
