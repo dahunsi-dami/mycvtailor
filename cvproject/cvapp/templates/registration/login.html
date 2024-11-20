@@ -1,0 +1,19 @@
+{% extends 'main/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="login-modal">
+	<span class="close-btn">&times;</span>
+	<form method="post">
+		{% csrf_token %}
+		<div>
+			<label for="id_username">Username:</label>
+			<input type="text" name="username" autofocus="" autocapitalize="none' autocomplete="username" maxlength="150" required="" id="id_username">
+		</div>
+		<div>
+			<label for="id_password">Password:</label>
+			<input type="password" name="password" autocomplete="current-password" required="" id="id_password">
+		</div>
+		<button type="submit" class="login-success">Log In</button>
+	</form>
+</div>
+{% endblock %}
