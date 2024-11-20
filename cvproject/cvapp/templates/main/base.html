@@ -1,0 +1,27 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<!-- CSS fonts linking -->
+		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		<title>{% block title %}Site Templates{% endblock %}</title>
+	</head>
+	<body>
+		<nav class="navbar">
+			<div class="navbar-container">
+				<img src="{% static 'images/cvtailor-logo2.png' %}" alt="CV Tailor Logo" id="logo" />
+			</div>
+			<div class="user-menu">
+				<button id="login-btn" class="user-link" href="/login">Log In</button>
+				<button id="login-btn" class="user-link" href="/signup">Sign Up</button>
+			</div>
+		</nav>
+		<div class="container">
+			{% block content %}
+			{% endblock %}
+		</div>
+	</body>
+</html>
