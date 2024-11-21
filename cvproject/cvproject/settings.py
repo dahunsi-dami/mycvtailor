@@ -93,7 +93,16 @@ WSGI_APPLICATION = 'cvproject.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': env.db()
+    'default': {
+        **env.db(),
+        'CONN_MAX_AGE': 600,
+        'OPTIONS': {
+            'keepalives': 1,
+            'keepalives_idle': 30,
+            'keepalives_interval': 10,
+            'keepalives_count': 5,
+        }
+    }
 }
 
 
