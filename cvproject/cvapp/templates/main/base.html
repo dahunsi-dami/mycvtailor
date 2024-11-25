@@ -32,6 +32,7 @@
 		}
 
 		body {
+			padding: 10px;
 			font-family: 'TRYVesterbro', sans-serif;
 			font-size: 12px;
 			font-weight: 400;
@@ -54,7 +55,7 @@
 
 		nav .user-menu {
 			float: right;
-			margin-bottom: 20px;
+			margin-bottom: 40px;
 		}
 
 		.user-menu span,
@@ -65,6 +66,40 @@
 
 		.container {
 			clear: both;
+		}
+
+		.gen-btn {
+			background-color: black;
+			color: white;
+			border: 1px solid black;
+			padding: 10px 15px;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.gen-btn:hover {
+			background-color: #444;
+		}
+
+		#login-btn {
+			margin-right: 10px;
+			background-color: white;
+			color: black;
+			border: 1px solid black;
+			padding: 10px 15px;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+		
+		#login-btn:hover {
+			background-color: #F0F0F0;
+		}
+
+		.container {
+			padding-top: 0px;
+			padding-right: 150px;
+			padding-bottom: 0px;
+			padding-left: 150px;
 		}
 		</style>
 
@@ -91,18 +126,20 @@
 	<body>
 		<nav class="navbar">
 			<div class="navbar-container">
-				<img src="{% static 'images/cvtailor-logo2.png' %}" alt="CV Tailor Logo" id="logo" />
+				<a href="{% url 'home' %}">
+					<img src="{% static 'images/cvtailor-logo2.png' %}" alt="CV Tailor Logo" id="logo" />
+				</a>
 			</div>
 			<div class="user-menu">
 				{% if user.is_authenticated %}
 				<span class="menu-text">Welcome, {{ user.username }} |</span>
 				<form method="POST" action="{% url 'logout' %}">
 					{% csrf_token %}
-					<button type="submit" id="logout-btn" class="user-link">Log Out</button>
+					<button type="submit" id="logout-btn" class="gen-btn">Log Out</button>
 				</form>
 				{% else %}
-				<button id="login-btn" class="user-link" href="/login">Log In</button>
-				<button id="login-btn" class="user-link" href="/signup">Sign Up</button>
+				<button id="login-btn" class="gen-btn" onclick="location.href='{% url 'login' %}'">Log In</button>
+				<button id="signup-btn" class="gen-btn" onclick="location.href='{% url 'sign_up' %}'">Sign Up</button>
 				{% endif %}
 			</div>
 		</nav>

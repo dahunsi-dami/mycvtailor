@@ -39,8 +39,6 @@ def logout_view(request):
     logout(request)
     return redirect('login')
 
-@method_decorator(cache_control(private=True, max_age=3600), name='dispatch')
+@method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+    template_name = 'registration/login.html'
