@@ -43,24 +43,69 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'cvapp.apps.CvappConfig',
     'debug_toolbar',
+    'compressor',
 ]
 
-SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+DEBUG_TOOLBAR_CONFIG = {
+    'SHOW_TOOLBAR_CALLBACK': lambda request: False,
+}
+
+STATICFILES_FINDERS = [
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+]
+
+COMPRESS_ENABLED = True
+COMPRESS_CSS_FILTERS = [
+    'compressor.filters.css_default.CssAbsoluteFilter',
+#    'compressor.filters.cssmin.rCSSMinFilter',
+]
+
+# Cache the auth user
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+]
 
 CACHES = {
     'default': {
+        'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+        'LOCATION': 'redis://127.0.0.1:6379/1',
+    },
+    'template_cache': {
         'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'template_cache',
     }
 }
+
+# Add template caching settings
+TEMPLATE_LOADERS = (
+    ('django.template.loaders.cached.Loader', [
+        'django.template.loaders.filesystem.Loader',
+        'django.template.loaders.app_directories.Loader',
+    ]),
+)
+
+# Session settings
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+SESSION_COOKIE_AGE = 86400
+SESSION_SAVE_EVERY_REQUEST = False
+
+# Cache middleware settings
+CACHE_MIDDLEWARE_SECONDS = 300
+CACHE_MIDDLEWARE_KEY_PREFIX = 'mycvtailor'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.cache.FetchFromCacheMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
@@ -98,10 +143,10 @@ DATABASES = {
         'CONN_MAX_AGE': 600,
         'OPTIONS': {
             'keepalives': 1,
-            'keepalives_idle': 30,
-            'keepalives_interval': 10,
+            'keepalives_idle': 5,
+            'keepalives_interval': 5,
             'keepalives_count': 5,
-        }
+        },
     }
 }
 
@@ -141,12 +186,41 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_DIRS = [BASE_DIR / "cvapp" / "static"]
+COMPRESS_ROOT = STATIC_ROOT
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
+
+# Add far-future expiration headers for static files
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+LOGIN_URL = 'login/'
 LOGIN_REDIRECT_URL = '/home'
 LOGOUT_REDIRECT_URL = '/login'
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'loggers': {
+        'django.db.backends': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+        'django.cache': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+        },
+    },
+}

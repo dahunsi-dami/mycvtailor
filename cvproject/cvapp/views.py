@@ -1,8 +1,16 @@
 from django.shortcuts import render, redirect
 from .forms import RegisterForm
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.views import LoginView
+from django.views.decorators.cache import cache_page, never_cache, cache_control
+from django.views.decorators.http import require_http_methods
+from django.core.cache import cache
+from django.views.decorators.vary import vary_on_cookie
+from django.utils.decorators import method_decorator
 
 # Create your views here.
+@cache_page(60 * 15)
+@vary_on_cookie
 def home(request):
     """The home view (i.e., web page) for the app."""
     return render(request, 'main/home.html')
@@ -22,3 +30,17 @@ def sign_up(request):
             'registration/sign_up.html',
             {"form": form}
     )
+
+@never_cache
+@require_http_methods(["POST"])
+def logout_view(request):
+    """Custom logout view with optimized performance."""
+    request.session.flush()
+    logout(request)
+    return redirect('login')
+
+@method_decorator(cache_control(private=True, max_age=3600), name='dispatch')
+class CustomLoginView(LoginView):
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context

@@ -1,4 +1,5 @@
 from django.contrib.auth import views as auth_views
+from django.views.decorators.cache import cache_page
 from django.urls import path
 from . import views
 
@@ -6,5 +7,7 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('home', views.home, name='home'),
     path('sign-up', views.sign_up, name='sign_up'),
-    path('logout', auth_views.LogoutView.as_view(), name='logout'),
+    path('logout/', views.logout_view, name='logout'),
+    path('login/', views.CustomLoginView.as_view(), name='login'),
+#    path('logout', auth_views.LogoutView.as_view(), name='logout'),
 ]

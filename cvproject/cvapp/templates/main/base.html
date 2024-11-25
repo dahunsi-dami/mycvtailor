@@ -1,12 +1,91 @@
 {% load static %}
+{% load compress %}
 <!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="UTF-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<!-- CSS fonts linking -->
-		<link rel="stylesheet" href="{% static 'css/style.css' %}">
+		<!-- Inline Critical CSS -->
+		<style>
+		/* Font-face declarations */
+		@font-face {
+			font-family: 'TRYVesterbro';
+			src: local('TRYVesterbro-Regular'), url('{% static "fonts/TRYVesterbro-Regular.otf" %}') format('opentype');
+			font-style: normal;
+			font-display: swap;
+		}
+
+		@font-face {
+			font-family: 'TRYVesterbro';
+			src: local('TRYVesterbro-Extrabold'), url('{% static "fonts/TRYVesterbro-Extrabold.otf" %}') format('opentype');
+			font-weight: 700;
+			font-display: swap;
+		}
+
+		/* General Styles */
+		button,
+		textarea,
+		textarea::placeholder,
+		input {
+			font-family: 'Roboto', sans-serif;
+		}
+
+		body {
+			font-family: 'TRYVesterbro', sans-serif;
+			font-size: 12px;
+			font-weight: 400;
+			line-height: 18px;
+		}
+
+		h1 {
+			font-family: 'TRYVesterbro', sans-serif;
+			font-size: 46px;
+			font-weight: 700;
+			line-height: 44px;
+			margin-bottom: 0px;
+		}
+
+		#logo {
+			float: left;
+			width: 80px;
+			max-width: 80px;
+		}
+
+		nav .user-menu {
+			float: right;
+			margin-bottom: 20px;
+		}
+
+		.user-menu span,
+		.user-menu form {
+			display: inline-block;
+			vertical-align: middle;
+		}
+
+		.container {
+			clear: both;
+		}
+		</style>
+
+		<!-- Preload Critical Google Font -->
+		<link rel="preconnect" href="https://fonts.googleapis.com">
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
+
+		<!-- Preload Critical Local Fonts -->
+		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Regular.otf' %}" as="font" type="font/opentype" crossorigin>
+		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Bold.otf' %}" as="font" type="font/opentype" crossorigin>
+
+		<!-- Defer non-critical CSS
+		{% compress css %}
+		<link rel="stylesheet" href="{% static 'css/style.css' %}" media="print" onload="this.media='all'">
+		{% endcompress %}
+		-->
+
+		<!-- Preload logo as it's visible immediately -->
+		<link rel="preload" href="{% static 'images/cvtailor-logo2.png' %}" as="image">
+
 		<title>{% block title %}Site Templates{% endblock %}</title>
 	</head>
 	<body>
@@ -16,14 +95,14 @@
 			</div>
 			<div class="user-menu">
 				{% if user.is_authenticated %}
-					<span class="menu-text">Welcome, {{user.username}} |</span>
-					<form method="POST" action="{% url 'logout' %}">
-						{% csrf_token %}
-						<button type="submit" id="logout-btn" class="user-link">Log Out</button>
-					</form>
+				<span class="menu-text">Welcome, {{ user.username }} |</span>
+				<form method="POST" action="{% url 'logout' %}">
+					{% csrf_token %}
+					<button type="submit" id="logout-btn" class="user-link">Log Out</button>
+				</form>
 				{% else %}
-					<button id="login-btn" class="user-link" href="/login">Log In</button>
-					<button id="login-btn" class="user-link" href="/signup">Sign Up</button>
+				<button id="login-btn" class="user-link" href="/login">Log In</button>
+				<button id="login-btn" class="user-link" href="/signup">Sign Up</button>
 				{% endif %}
 			</div>
 		</nav>
