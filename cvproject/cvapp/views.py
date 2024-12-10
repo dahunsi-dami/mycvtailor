@@ -37,7 +37,7 @@ def logout_view(request):
     """Custom logout view with optimized performance."""
     request.session.flush()
     logout(request)
-    return redirect('login')
+    return redirect('home')
 
 @method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
