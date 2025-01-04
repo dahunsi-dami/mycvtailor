@@ -1,13 +1,13 @@
-from django.shortcuts import render, redirect
-from .forms import RegisterForm
 from django.contrib.auth import login, logout, authenticate
 from django.contrib.auth.views import LoginView
-from django.views.decorators.cache import cache_page, never_cache, cache_control
-from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
 from django.http import JsonResponse
-from django.views.decorators.vary import vary_on_cookie
+from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
+from django.views.decorators.cache import cache_page, never_cache, cache_control
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.vary import vary_on_cookie
+from .forms import RegisterForm
 
 # Create your views here.
 @cache_page(60 * 15)
