@@ -9,7 +9,7 @@ class Command(BaseCommand):
             'registration/login.html',
             'main/home.html',
             'main/base.html',
-            'registration/sign_up.html',
+            'registration/signup.html',
         ]
         
         for template_name in templates:
