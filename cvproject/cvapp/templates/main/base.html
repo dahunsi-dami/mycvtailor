@@ -139,6 +139,57 @@
         	cursor: pointer;
     	}
 
+		.alert {
+			padding: 15px;
+			margin-bottom: 20px;
+			border: 1px solid transparent;
+			border-radius: 4px;
+		}
+		
+		.alert-danger {
+			color: #721c24;
+			background-color: #f8d7da;
+			border-color: #f5c6cb;
+		}
+
+		.form-content {
+			padding: 20px;
+		}
+
+		.form-group {
+			margin-bottom: 15px;
+		}
+
+		.form-group label {
+			display: block;
+			margin-bottom: 5px;
+		}
+
+		.form-group input {
+			width: 100%;
+			padding: 8px;
+			border: 1px solid #ddd;
+			border-radius: 4px;
+		}
+
+		.form-actions {
+			margin-top: 20px;
+			text-align: center;
+		}
+
+		.btn-primary {
+			background-color: black;
+			color: white;
+			border: 1px solid black;
+			padding: 10px 15px;
+			border-radius: 5px;
+			cursor: pointer;
+		}
+
+		.btn-primary:hover {
+			background-color: #444;
+		}
+
 		@media only screen and (max-width: 600px) {
 			.container {
 				padding-top: 0px;
@@ -205,15 +256,13 @@
 			</div>
 		</nav>
 
-		<!-- Login modal implementation. -->
+		<!-- Login modal implementation -->
 		<div class="login-modal" id="loginModal">
 			<div class="modal-content">
 				<span class="close-btn">&times;</span>
 				<form method="post" id="loginForm">
 					{% csrf_token %}
-					<div class="form-content">
-						<!-- Form is loaded here. -->>
-					</div>
+					<div class="form-content"></div> <!-- This div will hold the form content -->
 				</form>
 			</div>
 		</div>
@@ -229,16 +278,49 @@
 				const loginBtn = document.getElementById('login-btn');
 				const loginModal = document.getElementById('loginModal');
 				const closeBtn = document.querySelector('.close-btn');
+				const loginForm = document.getElementById('loginForm');
+
+				if (loginForm) {
+    				loginForm.addEventListener('submit', function(e) {
+        				e.preventDefault();
+        
+        				fetch("{% url 'login' %}", {
+            				method: 'POST',
+            				headers: {
+                				'X-Requested-With': 'XMLHttpRequest',
+                				'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+            				},
+            				body: new FormData(this)
+        				})
+        				.then(response => response.json())
+        				.then(data => {
+            				if (data.success) {
+                				window.location.href = data.redirect_url;
+            				} else {
+                				// Display errors
+                				const errorDiv = document.createElement('div');
+                				errorDiv.className = 'alert alert-danger';
+                				errorDiv.innerHTML = '<strong>Error:</strong> ' + 
+                    				Object.values(data.errors).flat().join(', ');
+                				loginForm.insertBefore(errorDiv, loginForm.firstChild);
+            				}
+        				});
+    				});
+				}
 			
 				if (loginBtn) {
 					loginBtn.addEventListener('click', function() {
 						loginModal.style.display = 'block';
-						// Fetch login form content
-						fetch("{% url 'login' %}")
-							.then(response => response.text())
-							.then(html => {
-								document.querySelector('.form-content').innerHTML = html;
-							});
+						// Fetch login form content with correct headers
+						fetch("{% url 'login' %}", {
+							headers: {
+								'X-Requested-With': 'XMLHttpRequest'  // Add this header
+							}
+						})
+						.then(response => response.text())
+						.then(html => {
+							document.querySelector('.form-content').innerHTML = html;
+						});
 					});
 				}
 			
