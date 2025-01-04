@@ -1,0 +1,13 @@
+{% extends 'main/base.html' %}
+{% block title %}Login{% endblock %}
+{% block content %}
+<div class="signup-modal">
+	<span class="close-btn">&times;</span>
+	<form method="post">
+		{% csrf_token %}
+		{{ form.as_p }}
+		<p>Have an account? Login <a href="/login">Here</a>!</p>
+		<button type="submit" class="btn-success">Sign Up</button>
+	</form>
+</div>
+{% endblock %}
