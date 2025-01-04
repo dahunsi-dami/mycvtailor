@@ -197,7 +197,7 @@
 					<button type="submit" id="logout-btn" class="gen-btn">Log Out</button>
 				</form>
 				{% else %}
-				<button id="login-btn" class="gen-btn" onclick="location.href='{% url 'login' %}'">Log In</button>
+				<button id="login-btn" class="gen-btn">Log In</button>
 				<button id="signup-btn" class="gen-btn" onclick="location.href='{% url 'sign_up' %}'">Sign Up</button>
 				{% endif %}
 			</div>
@@ -206,5 +206,50 @@
 			{% block content %}
 			{% endblock %}
 		</div>
+
+		<!-- Javascript to handle the login modal. -->
+		<script>
+			const loginBtn = document.getElementById('login-btn');
+			const loginModal = document.getElementById('loginModal');
+			const closeBtn = loginModal.querySelector('.close-btn');
+			const loginFom = document.getElementById('loginForm');
+
+			loginBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				loginModal.style.display = 'block';
+			});
+
+			closeBtn.addEventListener('click', function() {
+				loginModal.style.display = 'none';
+			});
+
+			window.addEventListener('click', function(e) {} {
+				if (e.target == loginModal) {
+					loginModal.style.display = 'none';
+				}
+			});
+
+			loginForm.addEventListener('submit', function(e) {
+				e.preventDefault();
+				const formData = new FormData(this);
+
+				fetch('/login/', {
+					method: 'POST',
+					body: formData,
+					headers: {
+						'X-Requested-with': 'XMLHttpRequest',
+					}
+				})
+				.then(response => response.json())
+				.then(data => {
+					if (data.success) {
+						window.location.reload();
+					} else {
+						// Handle errors
+						console.error(data.errors);
+					}
+				});
+			});
+		</script>
 	</body>
 </html>
