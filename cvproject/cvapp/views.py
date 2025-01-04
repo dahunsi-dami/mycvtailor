@@ -43,6 +43,16 @@ def logout_view(request):
 @method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
+    modal_template = 'registration/login_modal.html'
+
+    def get(self, request, *args, **kwargs):
+        """
+        Hanldes GET requests & returns the form.
+        """
+        if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            form = self.get_form()
+            return render(request, self.modal_template, {'form': form})
+        return super().get(request, *args, **kwargs)
  
     def form_valid(self, form):
         """
@@ -50,8 +60,11 @@ class CustomLoginView(LoginView):
         -handle successful login.
         """
         login(self.request, form.get_user)
-        if self.request.is_ajax():
-            return JsonResponse({'success': True})
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': True,
+                'redirect_url': self.get_success_url()
+            })
         return super().form_valid(form)
     
     def form_invalid(self, form):
@@ -59,6 +72,9 @@ class CustomLoginView(LoginView):
         Overrides custom method of LoginView to-
         -handle failed logins.
         """
-        if self.request.ajax():
-            return JsonResponse({'success': False})
+        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+            return JsonResponse({
+                'success': False,
+                'errors': form.errors
+            })
         return super().form_invalid(form)
