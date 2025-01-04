@@ -51,7 +51,7 @@ class CustomLoginView(LoginView):
         """
         if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             form = self.get_form()
-            return render(request, self.modal_template, {'form': form})
+            return render(request, 'registration/login_modal.html', {'form': form})
         return super().get(request, *args, **kwargs)
  
     def form_valid(self, form):
@@ -59,7 +59,7 @@ class CustomLoginView(LoginView):
         Overrides custom method of LoginView to-
         -handle successful login.
         """
-        login(self.request, form.get_user)
+        login(self.request, form.get_user())
         if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
             return JsonResponse({
                 'success': True,
