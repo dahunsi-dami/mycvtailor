@@ -5,6 +5,7 @@ from django.contrib.auth.views import LoginView
 from django.views.decorators.cache import cache_page, never_cache, cache_control
 from django.views.decorators.http import require_http_methods
 from django.core.cache import cache
+from django.http import JsonResponse
 from django.views.decorators.vary import vary_on_cookie
 from django.utils.decorators import method_decorator
 
@@ -42,3 +43,22 @@ def logout_view(request):
 @method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
     template_name = 'registration/login.html'
+ 
+    def form_valid(self, form):
+        """
+        Overrides custom method of LoginView to-
+        -handle successful login.
+        """
+        login(self.request, form.get_user)
+        if self.request.is_ajax():
+            return JsonResponse({'success': True})
+        return super().form_valid(form)
+    
+    def form_invalid(self, form):
+        """
+        Overrides custom method of LoginView to-
+        -handle failed logins.
+        """
+        if self.request.ajax():
+            return JsonResponse({'success': False})
+        return super().form_invalid(form)
