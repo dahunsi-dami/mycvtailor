@@ -120,6 +120,17 @@
         	z-index: 1000;
     	}
 
+		.signup-modal {
+			display: none;
+			position: fixed;
+			z-index: 1000;
+			left: 0;
+			top: 0;
+			width: 100%;
+			height: 100%;
+			background-color: rgba(0,0,0,0.5);
+		}
+
     	.modal-content {
         	background-color: #fefefe;
         	margin: 15% auto;
@@ -251,7 +262,7 @@
 				</form>
 				{% else %}
 				<button id="login-btn" class="gen-btn">Log In</button>
-				<button id="signup-btn" class="gen-btn" onclick="location.href='{% url 'sign_up' %}'">Sign Up</button>
+				<button id="signup-btn" class="gen-btn">Sign Up</button>
 				{% endif %}
 			</div>
 		</nav>
@@ -267,6 +278,17 @@
 			</div>
 		</div>
 
+		<!-- Signup modal implementation -->
+		<div class="signup-modal" id="signupModal">
+			<div class="modal-content">
+				<span class="close-btn" id="signupCloseBtn">&times;</span>
+				<form method="post" id="signupForm">
+					{% csrf_token %}
+					<div class="form-content"></div>
+				</form>
+			</div>
+		</div>
+
 		<div class="container">
 			{% block content %}
 			{% endblock %}
@@ -275,6 +297,7 @@
 		<!-- Javascript to handle the login modal. -->
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
+				// Login modal code
 				const loginBtn = document.getElementById('login-btn');
 				const loginModal = document.getElementById('loginModal');
 				const closeBtn = document.querySelector('.close-btn');
@@ -335,6 +358,60 @@
 						loginModal.style.display = 'none';
 					}
 				});
+
+				const signupModal = document.getElementById('signupModal');
+				const signupBtn = document.getElementById('signup-btn');
+				const signupCloseBtn = document.getElementById('signupCloseBtn');
+				const signupForm = document.getElementById('signupForm');
+
+				if (signupBtn) {
+					signupBtn.addEventListener('click', function() {
+						signupModal.style.display = 'block';
+						// Fetch signup form content with correct headers
+						fetch("{% url 'signup' %}", {
+							headers: {
+								'X-Requested-With': 'XMLHttpRequest'  // Add this header
+							}
+						})
+						.then(response => response.text())
+						.then(html => {
+							document.querySelector('#signupModal .form-content').innerHTML = html;
+						});
+					});
+				}
+
+				if (signupCloseBtn) {
+					signupCloseBtn.addEventListener('click', function() {
+						signupModal.style.display = 'none';
+					})
+				}
+
+				if (signupForm) {
+					signupForm.addEventListener('submit', function(e) {
+						e.preventDefault();
+
+						fetch("{% url 'signup' %}", {
+							method: 'POST',
+							headers: {
+								'X-Requested-With': 'XMLHttpRequest',
+								'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+							},
+							body: new FormData(this)
+						})
+						.then(response => response.json())
+						.then(data => {
+							if (data.success) {
+								window.location.href = data.redirect_url;
+							} else {
+								const errorDiv = document.createElement('div');
+								errorDiv.className = 'alert alert-danger';
+								errorDiv.innerHTML = '<strong>Error:</strong> ' +
+									Object.values(data.errors).flat().join(', ');
+								signupForm.insertBefore(errorDiv, signupForm.firstChild);
+							}
+						});
+					});
+				}
 			});
 		</script>
 	</body>
