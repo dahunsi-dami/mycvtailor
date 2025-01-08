@@ -143,7 +143,24 @@
 			overflow-y: auto;
         	border-radius: 5px;
         	position: relative;
+			opacity: 0;
+			transform: translateY(-20px);
+			transition: opacity 0.3s ease, transform 0.3s ease;
     	}
+
+		.modal-content.show {
+			opacity: 1;
+			transform: translateY(0);
+		}
+
+		.login-modal, .signup-modal {
+			background-color: rgba(0, 0, 0, 0);
+			transition: background-color 0.3s ease;
+		}
+
+		.login-modal.show, .signup-modal.show {
+			background-color: rgba(0, 0, 0, 0.5);
+		}
 
     	.close-btn {
         	position: absolute;
@@ -447,7 +464,7 @@
 				<span class="close-btn">&times;</span>
 				<form method="post" id="loginForm">
 					{% csrf_token %}
-					<div class="form-content"></div> <!-- This div will hold the form content -->
+					<div class="form-content"></div>
 				</form>
 			</div>
 		</div>
@@ -471,6 +488,49 @@
 		<!-- Javascript to handle the login modal. -->
 		<script>
 			document.addEventListener('DOMContentLoaded', function() {
+				// Preload login form
+				fetch("{% url 'login' %}", {
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest',
+						'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+					}
+				})
+				.then(response => response.text())
+				.then(html => {
+					const loginCache = document.createElement('div');
+					loginCache.id = 'loginCache';  // Add id
+					loginCache.style.display = 'none';
+					loginCache.innerHTML = html;
+					document.body.appendChild(loginCache);
+				})
+				.catch(error => {
+					console.error('Error preloading login form:', error);
+				});
+
+				// Preload signup form
+				fetch("{% url 'signup' %}", {
+					headers: {
+						'X-Requested-With': 'XMLHttpRequest',
+						'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+					}
+				})
+				.then(response => {
+        			if (!response.ok) {
+            			throw new Error('Network response was not ok');
+        			}
+        			return response.text();
+    			})
+				.then(html => {
+					const signupCache = document.createElement('div');
+					signupCache.id = 'signupCache';  // Add id
+					signupCache.style.display = 'none';
+					signupCache.innerHTML = html;
+					document.body.appendChild(signupCache);
+				})
+				.catch(error => {
+					console.error('Error preloading signup form:', error);
+				});
+
 				// Login modal code
 				const loginBtn = document.getElementById('login-btn');
 				const loginModal = document.getElementById('loginModal');
@@ -528,23 +588,25 @@
 				if (loginBtn) {
 					loginBtn.addEventListener('click', function() {
 						loginModal.style.display = 'block';
-						// Fetch login form content with correct headers
-						fetch("{% url 'login' %}", {
-							headers: {
-								'X-Requested-With': 'XMLHttpRequest',
-								'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
-							}
-						})
-						.then(response => response.text())
-						.then(html => {
-							document.querySelector('.form-content').innerHTML = html;
-						});
+						setTimeout(() => {
+							loginModal.classList.add('show');
+							loginModal.querySelector('.modal-content').classList.add('show');
+						}, 10);
+						
+						const cachedContent = document.querySelector('#loginCache');
+        				if (cachedContent) {
+            				document.querySelector('.form-content').innerHTML = cachedContent.innerHTML;
+        				}
 					});
 				}
 			
 				if (closeBtn) {
 					closeBtn.addEventListener('click', function() {
-						loginModal.style.display = 'none';
+						loginModal.classList.remove('show');
+    					loginModal.querySelector('.modal-content').classList.remove('show');
+    					setTimeout(() => {
+        					loginModal.style.display = 'none';
+    					}, 300);
 					});
 				}
 			
@@ -563,28 +625,31 @@
 				if (signupBtn) {
 					signupBtn.addEventListener('click', function() {
 						signupModal.style.display = 'block';
-						// Fetch signup form content with correct headers
-						fetch("{% url 'signup' %}", {
-							headers: {
-								'X-Requested-With': 'XMLHttpRequest'  // Add this header
-							}
-						})
-						.then(response => response.text())
-						.then(html => {
-							document.querySelector('#signupModal .form-content').innerHTML = html;
-						});
+						setTimeout(() => {
+            				signupModal.classList.add('show');
+            				signupModal.querySelector('.modal-content').classList.add('show');
+        				}, 10);
+						
+						const cachedContent = document.querySelector('#signupCache');
+        				if (cachedContent) {
+            				document.querySelector('#signupModal .form-content').innerHTML = cachedContent.innerHTML;
+        				}
 					});
 				}
 
 				if (signupCloseBtn) {
 					signupCloseBtn.addEventListener('click', function() {
-						signupModal.style.display = 'none';
+					    signupModal.classList.remove('show');
+    					signupModal.querySelector('.modal-content').classList.remove('show');
+    					setTimeout(() => {
+        					signupModal.style.display = 'none';
+    					}, 300);
 					})
 				}
 
 				window.addEventListener('click', function(e) {
 					if (e.target === signupModal) {
-						signModal.style.display = 'none';
+						signupModal.style.display = 'none';
 					}
 				});
 
