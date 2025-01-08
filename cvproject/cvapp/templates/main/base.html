@@ -231,6 +231,16 @@
 
 		.user-icon-btn i {
 			font-size: 1.5em;
+			margin-left: 8px;
+			color: black;
+		}
+
+		.username {
+			order: 1;
+		}
+
+		.user-icon-btn i {
+			order: 2;
 		}
 
 		.dropdown-content {
@@ -257,6 +267,27 @@
 			border: none;
 			background: none;
 			cursor: pointer;
+		}
+
+		.dropdown-content i {
+			width: 20px;
+		}
+
+		.dropdown-content a:hover,
+		.dropdown-content button:hover {
+			background-color: #f1f1f1;
+		}
+
+		.dropdown-content form {
+			margin: 0;
+		}
+
+		.dropdown-logout {
+			color: #dc3545;
+		}
+
+		.show {
+			display: block;
 		}
 
 		@media only screen and (max-width: 600px) {
@@ -294,7 +325,7 @@
 		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Bold.otf' %}" as="font" type="font/opentype" crossorigin>
 
 		{% compress css %}
-		<link rel="stylesheet" href="{% static 'css/all.min.css' %}" media="print" onload="this.media='all'">
+		<link rel="stylesheet" href="{% static 'css/all.min.css' %}" type="text/css">
 		{% endcompress %}
 
 		<!-- Preload logo as it's visible immediately -->
@@ -313,16 +344,16 @@
 				{% if user.is_authenticated %}
 				<div class="user-dropdown">
 					<button class="user-icon-btn">
-						<i class="fas fa-user-circle"></i>
 						<span class="username">Welcome, {{ user.username }}</span>
+						<i class="fa-solid fa-circle-user"></i>
 					</button>
 					<div class="dropdown-content">
-						<a href="#"><i class="fas fa-user"></i> Profile</a>
-						<a href="#"><i class="fas fa-user"></i> Settings</a>
+						<a href="#"><i class="fa-solid fa-user"></i> Profile</a>
+						<a href="#"><i class="fa-solid fa-gear"></i> Settings</a>
 						<form method="POST" action="{% url 'logout' %}">
 							{% csrf_token %}
-							<button type="submit" class="dropdown-content">
-								<i class="fas fa-sign-out-alt"></i>" Log Out
+							<button type="submit" class="dropdown-logout">
+								<i class="fa-solid fa-sign-out"></i> Log Out
 							</button>
 						</form>
 					</div>
@@ -379,6 +410,10 @@
 				if (loginForm) {
     				loginForm.addEventListener('submit', function(e) {
         				e.preventDefault();
+
+						// Disable form submission while processing
+						const submitButton = loginForm.querySelector('button[type="submit"]');
+						submitButton.disabled = true;
         
         				fetch("{% url 'login' %}", {
             				method: 'POST',
@@ -388,7 +423,12 @@
             				},
             				body: new FormData(this)
         				})
-        				.then(response => response.json())
+        				.then(response => {
+							if (!response.ok) {
+								return response.json().then(data => Promise.reject(data));
+							}
+							return response.json();
+						})
         				.then(data => {
             				if (data.success) {
                 				window.location.href = data.redirect_url;
@@ -397,10 +437,21 @@
                 				const errorDiv = document.createElement('div');
                 				errorDiv.className = 'alert alert-danger';
                 				errorDiv.innerHTML = '<strong>Error:</strong> ' + 
-                    				Object.values(data.errors).flat().join(', ');
+                    				(data.errors.__all__ ? data.errors.__all__.join(', ') : 'Login failed');
                 				loginForm.insertBefore(errorDiv, loginForm.firstChild);
             				}
-        				});
+        				})
+						.catch(error => {
+							console.error('Login error:', error);
+							const errorDiv = document.createElement('div');
+							errorDiv.className = 'alert alert-danger';
+							errorDiv.innerHTML = '<strong>Error:</strong> ' +
+								(error.message || 'An unexpected error occurred');
+							loginForm.insertBefore(errorDiv, loginForm.firstChild);
+						})
+						.finally(() => {
+							submitButton.disabled = false;
+						});
     				});
 				}
 			
@@ -411,7 +462,7 @@
 						fetch("{% url 'login' %}", {
 							headers: {
 								'X-Requested-With': 'XMLHttpRequest',
-								'X-CSRFTOKEN': document.querySelector('[name=csrfmiddlewaretoken]').value
+								'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
 							}
 						})
 						.then(response => response.text())
@@ -433,6 +484,7 @@
 					}
 				});
 
+				// Signup modal code
 				const signupModal = document.getElementById('signupModal');
 				const signupBtn = document.getElementById('signup-btn');
 				const signupCloseBtn = document.getElementById('signupCloseBtn');
@@ -508,6 +560,24 @@
 								}
 							}
 						});
+					});
+				}
+
+				// User dropdown menu
+				const userDropdown = document.querySelector('.user-icon-btn');
+				const dropdownContent = document.querySelector('.dropdown-content');
+
+				if (userDropdown && dropdownContent) {
+					userDropdown.addEventListener('click', function(e) {
+						e.stopPropagation();
+						dropdownContent.classList.toggle('show');
+					});
+
+					// Close dropdown when clicking outside
+					document.addEventListener('click', function(e) {
+						if (!userDropdown.contains(e.target)) {
+							dropdownContent.classList.remove('show');
+						}
 					});
 				}
 			});
