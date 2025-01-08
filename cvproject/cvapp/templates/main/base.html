@@ -348,7 +348,8 @@
 						// Fetch login form content with correct headers
 						fetch("{% url 'login' %}", {
 							headers: {
-								'X-Requested-With': 'XMLHttpRequest'  // Add this header
+								'X-Requested-With': 'XMLHttpRequest',
+								'X-CSRFTOKEN': document.querySelector('[name=csrfmiddlewaretoken]').value
 							}
 						})
 						.then(response => response.text())
@@ -397,6 +398,12 @@
 					})
 				}
 
+				window.addEventListener('click', function(e) {
+					if (e.target === signupModal) {
+						signModal.style.display = 'none';
+					}
+				});
+
 				if (signupForm) {
 					signupForm.addEventListener('submit', function(e) {
 						e.preventDefault();
@@ -414,11 +421,29 @@
 							if (data.success) {
 								window.location.href = data.redirect_url;
 							} else {
-								const errorDiv = document.createElement('div');
-								errorDiv.className = 'alert alert-danger';
-								errorDiv.innerHTML = '<strong>Error:</strong> ' +
-									Object.values(data.errors).flat().join(', ');
-								signupForm.insertBefore(errorDiv, signupForm.firstChild);
+								// Remove existing error messages
+								signupForm.querySelectorAll('.alert-danger').forEach(el => el.remove());
+								
+								// Handle non-field errors
+								if (data.errors.__all__) {
+									const nonFieldErrorDiv = document.createElement('div');
+									nonFieldErrorDiv.className = 'alert alert-danger';
+									nonFieldErrorDiv.innerHTML = '<strong>Error:</strong> ' + data.errors.__all__.join(', ');
+									signupForm.insertBefore(nonFieldErrorDiv, signupForm.firstChild);
+								}
+								
+								// Handle field-specific errors
+								for (const field in data.errors) {
+									if (field !== '__all__') {
+										const fieldElement = signupForm.querySelector(`[name=${field}]`);
+										if (fieldElement) {
+											const errorDiv = document.createElement('small');
+											errorDiv.className = 'text-danger';
+											errorDiv.textContent = data.errors[field].join(', ');
+											fieldElement.parentNode.appendChild(errorDiv);
+										}
+									}
+								}
 							}
 						});
 					});
