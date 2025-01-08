@@ -246,11 +246,9 @@
 		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Regular.otf' %}" as="font" type="font/opentype" crossorigin>
 		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Bold.otf' %}" as="font" type="font/opentype" crossorigin>
 
-		<!-- Defer non-critical CSS
 		{% compress css %}
-		<link rel="stylesheet" href="{% static 'css/style.css' %}" media="print" onload="this.media='all'">
+		<link rel="stylesheet" href="{% static 'css/all.min.css' %}" media="print" onload="this.media='all'">
 		{% endcompress %}
-		-->
 
 		<!-- Preload logo as it's visible immediately -->
 		<link rel="preload" href="{% static 'images/cvtailor-logo2.png' %}" as="image">
@@ -266,11 +264,28 @@
 			</div>
 			<div class="user-menu">
 				{% if user.is_authenticated %}
-				<span class="menu-text">Welcome, {{ user.username }} |</span>
+				<div class="user-dropdown">
+					<button class="user-icon-btn">
+						<i class="fas fa-user-circle"></i>
+						<span class="username">Welcome, {{ user.username }}</span>
+					</button>
+					<div class="dropdown-content">
+						<a href="#"><i class="fas fa-user"></i> Profile</a>
+						<a href="#"><i class="fas fa-user"></i> Settings</a>
+						<form method="POST" action="{% url 'logout' %}">
+							{% csrf_token %}
+							<button type="submit" class="dropdown-content">
+								<i class="fas fa-sign-out-alt"></i>" Log Out
+							</button>
+						</form>
+					</div>
+				<!-- Logout button
+				</span>
 				<form method="POST" action="{% url 'logout' %}">
 					{% csrf_token %}
 					<button type="submit" id="logout-btn" class="gen-btn">Log Out</button>
 				</form>
+				-->
 				{% else %}
 				<button id="login-btn" class="gen-btn">Log In</button>
 				<button id="signup-btn" class="gen-btn">Sign Up</button>
