@@ -13,8 +13,8 @@ from django.views.generic.edit import CreateView
 from .forms import RegisterForm
 
 # Create your views here.
-@cache_page(60 * 15)
-@vary_on_cookie
+# @cache_page(60 * 15)
+# @vary_on_cookie
 def home(request):
     """The home view (i.e., web page) for the app."""
     return render(request, 'main/home.html')
@@ -43,7 +43,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-@method_decorator(cache_control(private=True, max_age=300), name='dispatch')
+# @method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
     """Custom login view that leverages AJAX to prevent page reload."""
     template_name = 'registration/login.html'
@@ -59,17 +59,22 @@ class CustomLoginView(LoginView):
         return super().get(request, *args, **kwargs)
  
     def form_valid(self, form):
-        """
-        Overrides custom method of LoginView to-
-        -handle successful login.
-        """
-        login(self.request, form.get_user())
-        if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-            return JsonResponse({
-                'success': True,
-                'redirect_url': self.get_success_url()
-            })
-        return super().form_valid(form)
+        """Handle successful login."""
+        try:
+            login(self.request, form.get_user())
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': True,
+                    'redirect_url': self.get_success_url()
+                })
+            return super().form_valid(form)
+        except Exception as e:
+            if self.request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+                return JsonResponse({
+                    'success': False,
+                    'errors': {'__all__': ['Login failed. Please try again.']}
+                }, status=400)
+            raise
     
     def form_invalid(self, form):
         """
@@ -86,7 +91,7 @@ class CustomLoginView(LoginView):
 class CustomSignUpView(CreateView):
     """Custom signup view that leverages AJAX to prevent page reload."""
     form_class = UserCreationForm
-    temmplate_name = 'registration/signup.html'
+    template_name = 'registration/signup.html'
     success_url = reverse_lazy('home')
 
     def get(self, request, *args, **kwargs):
