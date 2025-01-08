@@ -212,6 +212,53 @@
 			background-color: #444;
 		}
 
+		/* User icon drop-down styling */
+		.user-dropdown {
+			position: relative;
+			display: inline-block;
+		}
+
+		.user-icon-btn {
+			background: none;
+			border: none;
+			cursor: pointer;
+			padding: 10px;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			color: black;
+		}
+
+		.user-icon-btn i {
+			font-size: 1.5em;
+		}
+
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			right: 0;
+			background-color: white;
+			min-width: 200px;
+			box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+			border-radius: 5px;
+			z-index: 1000;
+		}
+
+		.dropdown-content a,
+		.dropdown-content button {
+			color: black;
+			padding: 12px 16px;
+			text-decoration: none;
+			display: flex;
+			align-items: center;
+			gap: 8px;
+			width: 100%;
+			text-align: left;
+			border: none;
+			background: none;
+			cursor: pointer;
+		}
+
 		@media only screen and (max-width: 600px) {
 			.container {
 				padding-top: 0px;
