@@ -76,16 +76,17 @@
 		}
 
 		.gen-btn {
-			background-color: black;
-			color: white;
-			border: 1px solid black;
+			background-color: #FFD600;
+			color: black;
+			border: 1px solid #FFD600;
 			padding: 10px 15px;
 			border-radius: 5px;
 			cursor: pointer;
 		}
 
 		.gen-btn:hover {
-			background-color: #444;
+			background-color: #FFC800;
+			border-color: #FFC800;
 		}
 
 		#login-btn {
@@ -178,10 +179,13 @@
 			padding: 20px;
 			position: relative;
 			margin-bottom: 20px;
+			width: 100%;
+			box-sizing: border-box;
 		}
 
 		.form-group {
 			margin-bottom: 15px;
+			width: 100%;
 		}
 
 		.form-group label {
@@ -219,19 +223,20 @@
 		}
 
 		.btn-primary {
-			background-color: black;
-			color: white;
-			border: 1px solid black;
+			background-color: #FFD600;
+			color: black;
+			border: 1px solid #FFD600;
 			padding: 10px 15px;
 			border-radius: 5px;
 			cursor: pointer;
-			font-size: 1rem;          /* 16px */
+			/* font-size: 1rem;
     		font-weight: 500;
-    		padding: 0.625rem 1.25rem;
+    		padding: 0.625rem 1.25rem; */
 		}
 
 		.btn-primary:hover {
-			background-color: #444;
+			background-color: #FFC800;
+			border-color: #FFC800;
 		}
 
 		/* User icon drop-down styling */
@@ -315,7 +320,7 @@
 		/* Mobile devices (600px and below) */
 		@media only screen and (max-width: 600px) {
 			.container {
-				padding: 0;
+				padding: 0 15px;
 			}
 
 			h1 {
@@ -328,11 +333,23 @@
 				line-height: 1.5;
 			}
 
+			.modal-content {
+				width: 90%;
+				margin: 10% auto;
+				padding: 15px;
+			}
+
+			.form-content {
+				padding: 10px;
+			}
+
 			.form-group label {
         		font-size: 0.8125rem;  /* 13px */
     		}
     
     		.form-group input {
+				width: 100%;
+				box-sizing: border-box;
         		font-size: 1rem;       /* Keep 16px for mobile inputs */
     		}
     
