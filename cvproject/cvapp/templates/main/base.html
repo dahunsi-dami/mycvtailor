@@ -715,6 +715,67 @@
 						}
 					});
 				}
+
+				document.addEventListener('click', function(e) {
+					// Check if the clicked element has the modal-signup-link class
+					if (e.target.matches('.modal-signup-link')) {
+						e.preventDefault();
+						
+						// Hide the login modal
+						loginModal.classList.remove('show');
+						loginModal.querySelector('.modal-content').classList.remove('show');
+						setTimeout(() => {
+							loginModal.style.display = 'none';
+						}, 300);
+
+						// Show signup modal instead
+						signupModal.style.display = 'block';
+						setTimeout(() => {
+							signupModal.classList.add('show');
+							signupModal.querySelector('.modal-content').classList.add('show');
+						}, 10);
+
+						// Load signup form content if needed
+						const cachedContent = document.querySelector('#signupCache');
+						if (cachedContent) {
+							document.querySelector('#signupModal .form-content').innerHTML = cachedContent.innerHTML;
+						}
+					}
+				});
+
+				// Update the event delegation to use closest() to check if element or its parent has the class
+				document.addEventListener('click', function(e) {
+					const signupLink = e.target.closest('.modal-signup-link');
+					const loginLink = e.target.closest('.modal-login-link');
+					if (signupLink || loginLink) {
+						e.preventDefault();
+						e.stopPropagation(); // Added this to prevent event bubbling
+
+						const fromModal = signupLink ? loginModal : signupModal;
+						const toModal = signupLink ? signupModal : loginModal;
+						const cacheId = signupLink ? '#signupCache' : '#loginCache';
+						
+						// Hide login modal
+						fromModal.classList.remove('show');
+						fromModal.querySelector('.modal-content').classList.remove('show');
+						setTimeout(() => {
+							fromModal.style.display = 'none';
+						}, 300);
+
+						// Show signup modal
+						toModal.style.display = 'block';
+						setTimeout(() => {
+							toModal.classList.add('show');
+							toModal.querySelector('.modal-content').classList.add('show');
+						}, 10);
+
+						// Load signup form content
+						const cachedContent = document.querySelector(cacheId);
+						if (cachedContent) {
+							toModal.querySelector('.form-content').innerHTML = cachedContent.innerHTML;
+						}
+					}
+				});
 			});
 		</script>
 	</body>
