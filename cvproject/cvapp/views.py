@@ -43,7 +43,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-# @method_decorator(cache_control(private=True, max_age=300), name='dispatch')
+# method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
     """Custom login view that leverages AJAX to prevent page reload."""
     template_name = 'registration/login.html'
