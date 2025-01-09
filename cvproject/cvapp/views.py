@@ -90,7 +90,7 @@ class CustomLoginView(LoginView):
     
 class CustomSignUpView(CreateView):
     """Custom signup view that leverages AJAX to prevent page reload."""
-    form_class = UserCreationForm
+    form_class = RegisterForm
     template_name = 'registration/signup.html'
     success_url = reverse_lazy('home')
 
