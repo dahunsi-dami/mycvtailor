@@ -195,33 +195,39 @@
 		.form-content {
 			padding: 20px;
 			position: relative;
-			margin-bottom: 20px;
+			margin: 0 auto;  /* Center the form content */
 			width: 100%;
+			max-width: 400px;  /* Limit maximum width */
 			box-sizing: border-box;
 		}
 
 		.form-group {
 			margin-bottom: 15px;
 			width: 100%;
+			display: flex;
+			flex-direction: column;
+			align-items: center;  /* Center form elements */
 		}
 
 		.form-group label {
-			display: block;
+			width: 100%;
+			max-width: 400px;
+			text-align: left;
 			margin-bottom: 5px;
-			font-size: 0.875rem;      /* 14px */
-    		font-weight: 500;
-    		margin-bottom: 0.5rem;
-    		color: #333;
+			font-size: 0.875rem;
+			font-weight: 500;
+			color: #333;
 		}
 
 		.form-group input {
 			width: 100%;
+			max-width: 400px;
 			padding: 8px;
 			border: 1px solid #ddd;
 			border-radius: 4px;
-			font-size: 1rem;          /* 16px - good for mobile input */
-    		line-height: 1.5;
-    		padding: 0.5rem 0.75rem;
+			font-size: 1rem;
+			line-height: 1.5;
+			padding: 0.5rem 0.75rem;
 		}
 
 		.form-group small.text-danger {
@@ -398,6 +404,19 @@
 
 			#logo {
 				width: 70px;
+			}
+
+			.modal-content {
+				max-width: 450px;
+				margin: 12% auto;
+			}
+		}
+
+		/* Desktops (1025px and above) */
+		@media only screen and (min-width: 1025px) {
+			.modal-content {
+				max-width: 500px;
+				margin: 10% auto;
 			}
 		}
 		</style>
