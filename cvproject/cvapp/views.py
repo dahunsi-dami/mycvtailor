@@ -10,7 +10,9 @@ from django.views.decorators.cache import cache_page, never_cache, cache_control
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic.edit import CreateView
+from docx import Document
 from .forms import RegisterForm
+import json
 
 # Create your views here.
 # @cache_page(60 * 15)
@@ -128,3 +130,14 @@ class CustomSignUpView(CreateView):
                 'errors': form.errors
             })
         return super().form_invalid(form)
+    
+def tailor_cv(request):
+    if request.method == 'POST':
+        uploaded_file = request.FILES.get('resume')
+        if uploaded_file and uploaded_file.name.endswith('.docx'):
+            doc = Document(uploaded_file)
+            resume_text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+            return render(request, 'main/tailor_cv.html', {
+                'resume_text': resume_text
+            })
+    return render(request, 'main/tailor_cv.html')
