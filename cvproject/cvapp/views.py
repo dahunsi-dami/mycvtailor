@@ -11,8 +11,12 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic.edit import CreateView
 from docx import Document
+from docx.text.run import Run
+from docx.text.paragraph import Paragraph
 from .forms import RegisterForm
 import json
+from bs4 import BeautifulSoup
+import html
 
 # Create your views here.
 # @cache_page(60 * 15)
@@ -136,8 +140,34 @@ def tailor_cv(request):
         uploaded_file = request.FILES.get('resume')
         if uploaded_file and uploaded_file.name.endswith('.docx'):
             doc = Document(uploaded_file)
-            resume_text = '\n'.join([paragraph.text for paragraph in doc.paragraphs])
+            html_content = []
+            
+            for paragraph in doc.paragraphs:
+                if not paragraph.text.strip():
+                    continue
+                    
+                para_html = []
+                if paragraph._p.pPr.numPr is not None:  # Bullet point
+                    para_html.append('<li>')
+                else:
+                    para_html.append('<p>')
+                
+                for run in paragraph.runs:
+                    text = html.escape(run.text)
+                    if run.bold:
+                        text = f'<strong>{text}</strong>'
+                    if run.italic:
+                        text = f'<em>{text}</em>'
+                    para_html.append(text)
+                
+                if paragraph._p.pPr.numPr is not None:
+                    para_html.append('</li>')
+                else:
+                    para_html.append('</p>')
+                
+                html_content.append(''.join(para_html))
+            
             return render(request, 'main/tailor_cv.html', {
-                'resume_text': resume_text
+                'resume_text': '\n'.join(html_content)
             })
     return render(request, 'main/tailor_cv.html')
