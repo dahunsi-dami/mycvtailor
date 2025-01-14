@@ -1,6 +1,6 @@
 asgiref==3.8.1
 dj-database-url==2.3.0
-Django==5.1.4
+Django==5.1.5
 django-appconf==1.0.6
 django-compressor==4.5.1
 django-db-connection-pool==1.2.5
