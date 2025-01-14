@@ -9,5 +9,5 @@ urlpatterns = [
     path('signup/', views.CustomSignUpView.as_view(), name='signup'),
     path('logout/', views.logout_view, name='logout'),
     path('login/', views.CustomLoginView.as_view(template_name='registration/login.html'), name='login'),
-#    path('logout', auth_views.LogoutView.as_view(), name='logout'),
+    path('tailor-cv/', views.tailor_cv, name='tailor-cv'),
 ]
