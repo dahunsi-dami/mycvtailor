@@ -3,4 +3,22 @@
 {% block content %}
 <h1>Tailor your resume to many job descriptions with ease.</h1>
 <p>Make an ATS-compliant version of your resume that's maximally optimized for each job application.</p>
+
+<div class="upload-section">
+    <form method="POST" enctype="mutlipart/form-data" id="tailorForm">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="resume">Upload Your Resume (DOCX, PDF, or TXT)</label>
+            <input type="file" id="resume" name="resume" accept=".docx, .pdf, .txt" required>
+            <small class="form-text text-muted">Supported formats: DOCX, PDF, TXT</small>            
+        </div>
+
+        <div class="form-group">
+            <label for="job_description">Paste Job Description</label>
+            <textarea id="job_description" name="job_description" rows="10" required></textarea>
+        </div>
+
+        <button type="submit" class="tailor-btn">Tailor My CV</button>
+    </form>
+</div>
 {% endblock %}
