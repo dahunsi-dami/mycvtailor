@@ -28,7 +28,7 @@ pydantic_core==2.27.2
 PyPDF2==3.0.1
 python-decouple==3.8
 python-docx==1.1.2
-rcssmin==1.1.2
+rcssmin==1.2.0
 redis==5.2.0
 rjsmin==1.2.2
 setuptools==75.5.0
