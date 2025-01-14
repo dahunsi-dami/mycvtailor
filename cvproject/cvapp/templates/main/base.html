@@ -13,6 +13,7 @@
 			font-family: 'TRYVesterbro';
 			src: local('TRYVesterbro-Regular'), url('{% static "fonts/TRYVesterbro-Regular.otf" %}') format('opentype');
 			font-style: normal;
+			font-weight: 400;
 			font-display: swap;
 		}
 
@@ -20,8 +21,25 @@
 			font-family: 'TRYVesterbro';
 			src: local('TRYVesterbro-Extrabold'), url('{% static "fonts/TRYVesterbro-Extrabold.otf" %}') format('opentype');
 			font-weight: 700;
+			font-style: normal;
 			font-display: swap;
 		}
+
+		@font-face {
+            font-family: 'Vesterbro';
+            src: url('{% static "fonts/TRYVesterbro-Regular.otf" %}') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+            font-display: swap;
+        }
+
+        @font-face {
+            font-family: 'Vesterbro';
+            src: url('{% static "fonts/TRYVesterbro-Bold.otf" %}') format('opentype');
+            font-weight: 700;
+            font-style: normal;
+            font-display: swap;
+        }
 
 		/* General Styles */
 		button,
@@ -45,6 +63,10 @@
 			line-height: 1.2;
 			margin-bottom: 1rem;
 			font-weight: 700;
+		}
+
+		h2, h3 {
+			font-family: 'Vesterbro', sans-serif;
 		}
 
 		p {
@@ -477,8 +499,9 @@
 		<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap">
 
 		<!-- Preload Critical Local Fonts -->
-		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Regular.otf' %}" as="font" type="font/opentype" crossorigin>
-		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Bold.otf' %}" as="font" type="font/opentype" crossorigin>
+		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Regular.otf' %}" as="font" type="font/otf" crossorigin="anonymous">
+		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Bold.otf' %}" as="font" type="font/otf" crossorigin="anonymous">
+		<link rel="preload" href="{% static 'fonts/TRYVesterbro-Extrabold.otf' %}" as="font" type="font/otf" crossorigin="anonymous">
 
 		{% compress css %}
 		<link rel="stylesheet" href="{% static 'css/all.min.css' %}" type="text/css">
