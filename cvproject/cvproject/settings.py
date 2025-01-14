@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'cvapp.apps.CvappConfig',
     'debug_toolbar',
     'compressor',
+    'widget_tweaks',
 ]
 
 DEBUG_TOOLBAR_CONFIG = {
