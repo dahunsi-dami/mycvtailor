@@ -19,30 +19,20 @@
 <script>
     require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
     require(['vs/editor/editor.main'], function() {
-        var resumeText = document.getElementById('resume-text').textContent || '';
-
-        // Define editor options with styling
         var editorOptions = {
-            value: resumeText,
-            language: 'plaintext',
+            value: document.getElementById('resume-text').textContent || '',
+            language: 'html',
             theme: 'vs-light',
             lineNumbers: "off",
             fontSize: 14,
             fontFamily: "'Roboto', monospace",
             lineHeight: 24,
-            minimap: {
-                enabled: false
-            },
-            padding: {
-                top: 20,
-                bottom: 20
-            },
+            minimap: { enabled: false },
             wordWrap: 'on',
             scrollBeyondLastLine: false,
-            automaticLayout: true,
-            renderWhitespace: 'none'
+            automaticLayout: true
         };
-
+        
         var editor = monaco.editor.create(document.getElementById('monaco-editor'), editorOptions);
     });
 </script>
