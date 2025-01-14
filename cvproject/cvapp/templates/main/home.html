@@ -5,7 +5,7 @@
 <p>Make an ATS-compliant version of your resume that's maximally optimized for each job application.</p>
 
 <div class="upload-section">
-    <form method="POST" enctype="mutlipart/form-data" id="tailorForm">
+    <form method="POST" enctype="multipart/form-data" id="tailorForm" action="{% url 'tailor-cv' %}">
         {% csrf_token %}
         <div class="form-group">
             <label for="resume">Upload Your Resume (DOCX, PDF, or TXT)</label>
