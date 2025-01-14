@@ -13,8 +13,8 @@ from django.views.generic.edit import CreateView
 from .forms import RegisterForm
 
 # Create your views here.
-@cache_page(60 * 15)
-@vary_on_cookie
+# @cache_page(60 * 15)
+# @vary_on_cookie
 def home(request):
     """The home view (i.e., web page) for the app."""
     return render(request, 'main/home.html')
@@ -43,7 +43,7 @@ def logout_view(request):
     logout(request)
     return redirect('home')
 
-@method_decorator(cache_control(private=True, max_age=300), name='dispatch')
+# @method_decorator(cache_control(private=True, max_age=300), name='dispatch')
 class CustomLoginView(LoginView):
     """Custom login view that leverages AJAX to prevent page reload."""
     template_name = 'registration/login.html'
