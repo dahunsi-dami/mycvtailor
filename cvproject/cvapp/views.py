@@ -143,63 +143,60 @@ def tailor_cv(request):
             doc = Document(uploaded_file)
             html_content = []
             
-            print("\nDEBUG: Document Relationships")
-            print("All document rels:", [(rid, rel.reltype) for rid, rel in doc.part.rels.items()])
+            # Get document relationships
+            doc_rels = {
+                rid: rel.target_ref for rid, rel in doc.part.rels.items() 
+                if rel.reltype == RT.HYPERLINK
+            }
             
             for paragraph in doc.paragraphs:
                 if not paragraph.text.strip():
                     continue
-                    
+
                 para_html = []
                 if paragraph._p.pPr.numPr is not None:
                     para_html.append('<li>')
                 else:
                     para_html.append('<p>')
 
-                # Get hyperlink relationships
-                rels = paragraph.part.rels
-                hyperlink_rels = {}
-                
-                # Collect all hyperlink relationships
-                print("\nDEBUG: Paragraph Relationships")
-                for rel_id, rel in rels.items():
-                    print(f"Relationship ID: {rel_id}, Type: {rel.reltype}")
-                    if rel.reltype == RT.HYPERLINK:
-                        hyperlink_rels[rel_id] = rel.target_ref
-                        print(f"Found hyperlink: {rel.target_ref}")
-                
-                # Process runs with hyperlinks
-                for run in paragraph.runs:
-                    text = html.escape(run.text)
-                    parent = run._element.getparent()
-                    
-                    if parent.tag.endswith('hyperlink'):
-                        rel_id = parent.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
-                        if rel_id and rel_id in hyperlink_rels:
-                            url = hyperlink_rels[rel_id]
-                            # Format hyperlink
-                            text = f'<a href="{url}">{text}</a>'
-                    
-                    # Apply other formatting
-                    if run.bold:
-                        text = f'<strong>{text}</strong>'
-                    if run.italic:
-                        text = f'<em>{text}</em>'
-                    
-                    # Add text to paragraph HTML
-                    para_html.append(text)
-                
+                # Process the paragraph's XML structure
+                for element in paragraph._element:
+                    if element.tag.endswith('hyperlink'):
+                        # Handle hyperlinks safely
+                        rel_id = element.get('{http://schemas.openxmlformats.org/officeDocument/2006/relationships}id')
+                        if rel_id and rel_id in doc_rels:
+                            url = doc_rels[rel_id]
+                            # Safer text extraction
+                            texts = []
+                            for run in element.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r'):
+                                t_element = run.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t')
+                                if t_element is not None and t_element.text:
+                                    texts.append(html.escape(t_element.text))
+                            
+                            hyperlink_text = ''.join(texts)
+                            if hyperlink_text:  # Only add if we have text
+                                para_html.append(f'<a href="{url}">{hyperlink_text}</a>')
+                    elif element.tag.endswith('r'):
+                        # Handle regular runs
+                        run_text = ''.join(
+                            html.escape(child.text or '') 
+                            for child in element.findall('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t')
+                        )
+                        # Apply formatting
+                        rPr = element.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}rPr')
+                        if rPr is not None:
+                            if rPr.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}b') is not None:
+                                run_text = f'<strong>{run_text}</strong>'
+                            if rPr.find('{http://schemas.openxmlformats.org/wordprocessingml/2006/main}i') is not None:
+                                run_text = f'<em>{run_text}</em>'
+                        para_html.append(run_text)
+
                 if paragraph._p.pPr.numPr is not None:
                     para_html.append('</li>')
                 else:
                     para_html.append('</p>')
-                
+
                 html_content.append(''.join(para_html))
-                print(f"\nDEBUG: Current paragraph HTML:")
-                print(''.join(para_html))
-            
-            print("\nDEBUG: Final HTML content first 500 chars:")
-            print('\n'.join(html_content)[:500])
             
             return render(request, 'main/tailor_cv.html', {
                 'resume_text': '\n'.join(html_content)
