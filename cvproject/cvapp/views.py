@@ -139,6 +139,7 @@ class CustomSignUpView(CreateView):
 def tailor_cv(request):
     if request.method == 'POST':
         uploaded_file = request.FILES.get('resume')
+        job_description = request.POST.get('job_description', '')
         if uploaded_file and uploaded_file.name.endswith('.docx'):
             doc = Document(uploaded_file)
             html_content = []
@@ -199,6 +200,7 @@ def tailor_cv(request):
                 html_content.append(''.join(para_html))
             
             return render(request, 'main/tailor_cv.html', {
-                'resume_text': '\n'.join(html_content)
+                'resume_text': '\n'.join(html_content),
+                'job_description': job_description
             })
     return render(request, 'main/tailor_cv.html')
