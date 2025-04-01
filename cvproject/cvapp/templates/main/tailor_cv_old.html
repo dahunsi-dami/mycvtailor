@@ -1,0 +1,262 @@
+{% extends './base.html' %}
+{% block title %}Tailor CV{% endblock %}
+{% block content %}
+
+<div class="editor-container">
+    <!-- Left side with editor -->
+    <div class="editor-main">
+        <div class="editor-header">
+            <h1>Edit Your CV</h1>
+            <p>Customize your resume text below to match the job description. Your changes will be saved automatically.</p>
+        </div>
+
+        <div id="editor-container" style="display: none;">
+            <div id="monaco-editor" style="width:100%;height:600px;"></div>
+        </div>
+
+        <div id="preview" class="preview-container" contenteditable="true"></div>
+        <div id="resume-text" style="display: none;">{{ resume_text|default:"" }}</div>
+    </div>
+
+    <!-- Right sidebar -->
+    <div class="editor-sidebar" id="editor-sidebar">
+        <div class="sidebar-toggle" id="sidebar-toggle">
+            <i class="fa-solid fa-chevron-left"></i>
+        </div>
+        <div class="sidebar-content">
+            <h3>Job Description</h3>
+            <div class="job-description-container">
+                <div class="job-description" contenteditable="true">
+                    {{ job_description|safe }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
+<script>
+    require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
+    require(['vs/editor/editor.main'], function() {
+        var editorOptions = {
+            value: document.getElementById('resume-text').textContent || '',
+            language: 'html',
+            theme: 'vs-light',
+            lineNumbers: "off",
+            fontSize: 14,
+            fontFamily: "'Roboto', monospace",
+            lineHeight: 24,
+            minimap: { enabled: false },
+            wordWrap: 'on',
+            scrollBeyondLastLine: false,
+            automaticLayout: true
+        };
+        
+        var editor = monaco.editor.create(document.getElementById('monaco-editor'), editorOptions);
+        var preview = document.getElementById('preview');
+        
+        // Initial preview content
+        preview.innerHTML = editor.getValue();
+        
+        // Sync preview changes to editor
+        preview.addEventListener('input', function() {
+            editor.setValue(preview.innerHTML);
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const sidebar = document.getElementById('editor-sidebar');
+        const toggle = document.getElementById('sidebar-toggle');
+        
+        // Load saved state
+        const sidebarCollapsed = localStorage.getItem('sidebarCollapsed') === 'true';
+        if (sidebarCollapsed) {
+            sidebar.classList.add('collapsed');
+        }
+
+        toggle.addEventListener('click', function() {
+            sidebar.classList.toggle('collapsed');
+            localStorage.setItem('sidebarCollapsed', sidebar.classList.contains('collapsed'));
+        });
+    });
+</script>
+
+<style>
+    .preview-container {
+        width: 100%;
+        /* max-width: 800px; */
+        min-height: 600px;
+        margin: 0;
+        padding: 40px;
+        background: white;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        outline: none;
+    }
+    
+    .preview-container * {
+        font-family: 'Roboto', sans-serif !important;
+        font-size: 14px !important;
+        line-height: 1.6 !important;
+    }
+
+    .preview-container a {
+        color: #0366d6 !important;
+        text-decoration: underline !important;
+    }
+
+    .preview-container a:hover {
+        text-decoration: none !important;
+    }
+    
+    .preview-container p {
+        margin-bottom: 1em;
+    }
+    
+    .preview-container li {
+        margin-left: 20px;
+        list-style-type: disc;
+    }
+    
+    .preview-container strong {
+        font-weight: 700 !important;
+    }
+    
+    .preview-container em {
+        font-style: italic !important;
+    }
+
+    .editor-container {
+        display: flex;
+        position: relative;
+        /* gap: 20px;
+        margin: 0 -20px; Compensate for padding */
+        gap: 0;
+        margin: 0;
+    }
+
+    .editor-main {
+        flex: 1;
+        min-width: 0; /* Prevents flex item from overflowing */
+        padding: 0;
+        margin-right: 300px;
+    }
+
+    .editor-sidebar {
+        width: 300px;
+        background: white;
+        border-left: 1px solid #ddd;
+        position: fixed;
+        right: 0;
+        top: 80px;
+        bottom: 0;
+        transition: transform 0.3s ease;
+        z-index: 100;
+        height: calc(100vh - 80px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .editor-sidebar.collapsed {
+        transform: translateX(100%);
+    }
+
+    .sidebar-toggle {
+        position: absolute;
+        left: -30px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 30px;
+        height: 60px;
+        background: white;
+        border: 1px solid #ddd;
+        border-right: none;
+        border-radius: 5px 0 0 5px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 101;
+    }
+
+    .editor-sidebar.collapsed .sidebar-toggle i {
+        transform: rotate(180deg);
+    }
+
+    .sidebar-content {
+        padding: 20px;
+        height: 100%;
+        /* overflow-y: auto; */
+        display: flex;
+        flex-direction: column;
+    }
+
+    .sidebar-content h3 {
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+        font-weight: 600;
+    }
+
+    .job-description-container {
+        height: 50%;
+        overflow: hidden;
+        position: relative;
+        border-bottom: 1px solid #ddd;
+    }
+
+    .job-description {
+        font-size: 12px !important;
+        line-height: 1.6;
+        color: #333;
+        white-space: pre-line;  /* Collapses multiple whitespace but preserves line breaks */
+        word-wrap: break-word;
+        padding: 15px;
+        background: #f8f9fa;
+        border-radius: 4px;
+        outline: none;
+        border: 1px solid transparent;
+        transition: border-color 0.2s;
+        height: 100%;
+        overflow-y: auto;
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+    }
+
+    .job-description br {
+        content: "";
+        display: block;
+        margin: 0.25em 0;
+    }
+
+    /* Remove bottom padding from paragraphs */
+    .job-description p {
+        margin: 0;
+        line-height: 1.6;
+        padding: 0;  /* Remove padding */
+        font-size: 12px !important;  /* Force 12px font size for paragraphs */
+    }
+
+    /* Reduce spacing between paragraphs */
+    .job-description p + p {
+        margin-top: 0.25em;  /* Reduced from 0.5em */
+    }
+
+    .job-description ul, 
+    .job-description ol {
+        margin-left: 20px;
+        margin-bottom: 0.5em;
+    }
+
+    .job-description li {
+        margin-bottom: 0.5em;  /* Change from padding to margin */
+    }
+
+    .job-description li:last-child {
+        margin-bottom: 0;
+    }
+</style>
+{% endblock %}
