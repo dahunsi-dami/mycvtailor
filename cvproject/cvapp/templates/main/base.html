@@ -77,19 +77,17 @@
 		}
 
 		.navbar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
 			display: flex;
 			align-items: center;
 			justify-content: space-between;
-		}
-
-		a .logo {
-			width: 80px;
-			max-width: 80px;
-		}
-
-		.user-menu #login-btn,
-		.user-menu #signup-btn {
-			margin-left: 25px;
+			background-color: white;
+			z-index: 1000;
+			padding: 10px 20px;
+			box-sizing: border-box;
 		}
 /*
 		#logo {
@@ -104,18 +102,39 @@
 		}
 */
 		.grey-line {
-			margin-top: 20px;
+			position: fixed;
+			top: 60px;
+			left: 0;
+			width: 100%;
 			border-bottom: 1px solid #ddd;
+			z-index: 999;
+		}
+
+		.container {
+			margin-top: 80px;
+			clear: both;
+		}
+
+		.user-menu {
+			display: flex;
+			align-items: center;
+			gap: 10px;
+		}
+
+		a .logo {
+			width: 80px;
+			max-width: 80px;
+		}
+
+		.user-menu #login-btn,
+		.user-menu #signup-btn {
+			margin-left: 25px;
 		}
 
 		.user-menu span,
 		.user-menu form {
 			display: inline-block;
 			vertical-align: middle;
-		}
-
-		.container {
-			clear: both;
 		}
 
 		.gen-btn {
