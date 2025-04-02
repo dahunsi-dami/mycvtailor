@@ -76,6 +76,22 @@
 			font-weight: 400;
 		}
 
+		.navbar {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		a .logo {
+			width: 80px;
+			max-width: 80px;
+		}
+
+		.user-menu #login-btn,
+		.user-menu #signup-btn {
+			margin-left: 25px;
+		}
+/*
 		#logo {
 			float: left;
 			width: 80px;
@@ -86,9 +102,9 @@
 			float: right;
 			margin-bottom: 120px;
 		}
-
+*/
 		.grey-line {
-			margin-top: 55px;
+			margin-top: 20px;
 			border-bottom: 1px solid #ddd;
 		}
 
@@ -429,7 +445,7 @@
 				padding: 10px 20px;
 			}
 
-			#logo {
+			.logo {
 				width: 70px;
 			}
 
@@ -536,7 +552,7 @@
 		<nav class="navbar">
 			<div class="navbar-container">
 				<a href="{% url 'home' %}">
-					<img src="{% static 'images/cvtailor-logo2.png' %}" alt="CV Tailor Logo" id="logo" />
+					<img src="{% static 'images/cvtailor-logo2.png' %}" alt="CV Tailor Logo" class="logo" />
 				</a>
 			</div>
 			<div class="user-menu">
