@@ -4,7 +4,7 @@
 
 	<div class="editor-container">
 		<!-- Left side with editor -->
-		<div class="editor-main">
+		<div class="editor-main full">
 			<div class="editor-header">
 				<h1>Edit Your CV</h1>
 				<p>Customize your resume text below to match the job description. Your changes will be saved automatically.</p>
@@ -19,7 +19,7 @@
 		</div>
 
 		<!-- Right sidebar -->
-		<div class="editor-sidebar hidden-mobile">
+		<div class="editor-sidebar initial-hidden>
 			<button class="sidebar-toggle">◀</button>
 			<div class="sidebar-content">
 				<h3>Job Description</h3>
@@ -69,6 +69,7 @@
 
 		// Set initial state of sidebar based on screen size.
 		function setInitialState() {
+			sidebar.classList.remove('initial-hidden');
 			if (window.innerWidth <= 768) {
 				sidebar.classList.add('hidden');
 				mainEditor.classList.add('full');
@@ -172,6 +173,10 @@
 	font-style: italic !important;
 	}
 
+	.initial-hidden {
+		transform: translateX(250px) !important;
+	}
+
 	.editor-sidebar {
 	height: 100vh;
 	width: 250px;
@@ -222,6 +227,10 @@
 
 	/* Media query for tablet and mobile: 768px and below */
 	@media (max-width: 768px) {
+		.initial-hidden {
+			transform: translateY(-200px) !important;
+		}
+
 		.preview-container {
 			width: auto;
 		}
