@@ -4,7 +4,7 @@
 
 	<div class="editor-container">
 		<!-- Left side with editor -->
-		<div class="editor-main full">
+		<div class="editor-main">
 			<div class="editor-header">
 				<h1>Edit Your CV</h1>
 				<p>Customize your resume text below to match the job description. Your changes will be saved automatically.</p>
@@ -19,251 +19,174 @@
 		</div>
 
 		<!-- Right sidebar -->
-		<div class="editor-sidebar initial-hidden>
-			<button class="sidebar-toggle">◀</button>
+		<div id="sidebar" class="sidebar">
+			<div id="toggle-button" class="toggle-button">▶</div>
 			<div class="sidebar-content">
-				<h3>Job Description</h3>
-				<div class="job-description-container">
-					<div class="job-description" contenteditable="true">
-						{{ job_description|safe }}
-					</div>
+				<h2>Job Description</h2>
+				<div class="job-description-content">
+					<p>This is where the job description will appear.</p>
 				</div>
 			</div>
 		</div>
-		</div>
+	</div>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs/loader.js"></script>
 	<script>
 	require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.45.0/min/vs' }});
-	require(['vs/editor/editor.main'], function() {
-		var editorOptions = {
-			value: document.getElementById('resume-text').textContent || '',
-			language: 'html',
-			theme: 'vs-light',
-			lineNumbers: "off",
-			fontSize: 14,
-			fontFamily: "'Roboto', monospace",
-			lineHeight: 24,
-			minimap: { enabled: false },
-			wordWrap: 'on',
-			scrollBeyondLastLine: false,
-			automaticLayout: true
-		};
+require(['vs/editor/editor.main'], function() {
+var editorOptions = {
+value: document.getElementById('resume-text').textContent || '',
+language: 'html',
+theme: 'vs-light',
+lineNumbers: "off",
+fontSize: 14,
+fontFamily: "'Roboto', monospace",
+lineHeight: 24,
+minimap: { enabled: false },
+wordWrap: 'on',
+scrollBeyondLastLine: false,
+automaticLayout: true
+};
 
-		var editor = monaco.editor.create(document.getElementById('monaco-editor'), editorOptions);
-		var preview = document.getElementById('preview');
+var editor = monaco.editor.create(document.getElementById('monaco-editor'), editorOptions);
+var preview = document.getElementById('preview');
 
-		// Initial preview content
-		preview.innerHTML = editor.getValue();
+// Initial preview content
+preview.innerHTML = editor.getValue();
 
-		// Sync preview changes to editor
-		preview.addEventListener('input', function() {
-			editor.setValue(preview.innerHTML);
-		});
-	});
+// Sync preview changes to editor
+preview.addEventListener('input', function() {
+editor.setValue(preview.innerHTML);
+});
 
-	document.addEventListener('DOMContentLoaded', function() {
-		const sidebar = document.querySelector('.editor-sidebar');
-		const toggle = document.querySelector('.sidebar-toggle');
-		const mainEditor = document.querySelector('.editor-main');
+// Sidebar functionality
+const sidebar = document.getElementById('sidebar');
+const toggleButton = document.getElementById('toggle-button');
+const editorMain = document.querySelector('.editor-main');
 
-		// Set initial state of sidebar based on screen size.
-		function setInitialState() {
-			sidebar.classList.remove('initial-hidden');
-			if (window.innerWidth <= 768) {
-				sidebar.classList.add('hidden');
-				mainEditor.classList.add('full');
-				toggle.textContent = 'Job description ▼';
-			} else {
-				sidebar.classList.remove('hidden');
-				mainEditor.classList.remove('full');
-				toggle.textContent = '▶';
-			}
-		}
+toggleButton.addEventListener('click', function() {
+sidebar.classList.toggle('closed');
+editorMain.classList.toggle('full');
 
-		window.addEventListener('load', setInitialState);
-
-		toggle.addEventListener('click', () => {
-			sidebar.classList.toggle('hidden');
-			mainEditor.classList.toggle('full');
-
-			// Change arrow based on device screen width.
-			if (window.innerWidth <= 768) {
-				toggle.textContent = sidebar.classList.contains('hidden') ? 'Job description ▼' : 'Job description ▲';
-			} else {
-				toggle.textContent = sidebar.classList.contains('hidden') ? '◀' : '▶';
-			}
-		});
-
-		// Update arrow when window is manually resized.
-		window.addEventListener('resize', () => {
-			if (window.innerWidth <= 768) {
-				if (!sidebar.classList.contains('hidden')) {
-					toggle.textContent = 'Job description ▲'
-				} else {
-					toggle.textContent = 'Job description ▼'
-				}
-			} else {
-				if (!sidebar.classList.contains('hidden')) {
-					toggle.textContent = '▶';
-				} else {
-					toggle.textContent = '◀';
-				}
-			}
-		});
-
-	});
-	</script>
+// Update toggle button text based on sidebar state
+if (sidebar.classList.contains('closed')) {
+toggleButton.textContent = '◀';
+} else {
+toggleButton.textContent = '▶';
+}
+});
+});
+</script>
 
 	<style>
 
 	nav .user-menu {
-	margin-bottom: 0px;
+		margin-bottom: 0px;
 	}
 
 	.container {
-	background-color: yellow;
-	padding-right: 50px;
-	padding-left: 50px;
-	overflow-x: hidden;
+		padding-right: 50px;
+		padding-left: 50px;
+		overflow-x: hidden;
 	}
 
-	.preview-container {
-	width: 100%;
-	max-width: 1100px;
-	min-height: 600px;
-	margin: 0;
-	padding: 40px;
-	background: white;
-	border: 1px solid #ddd;
-	border-radius: 4px;
-	box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-	outline: none;
+	.editor-container {
+		display: flex;
+		position: relative;
+		width: 100%;
 	}
 
-	.preview-container * {
-	font-family: 'Roboto', sans-serif !important;
-	font-size: 14px !important;
-	line-height: 1.6 !important;
-	}
-
-	.preview-container a {
-	color: #0366d6 !important;
-	text-decoration: underline !important;
-	}
-
-	.preview-container a:hover {
-	text-decoration: none !important;
-	}
-
-	.preview-container p {
-	margin-bottom: 1em;
-	}
-
-	.preview-container li {
-	margin-left: 20px;
-	list-style-type: disc;
-	}
-
-	.preview-container strong {
-	font-weight: 700 !important;
-	}
-
-	.preview-container em {
-	font-style: italic !important;
-	}
-
-	.initial-hidden {
-		transform: translateX(250px) !important;
-	}
-
-	.editor-sidebar {
-	height: 100vh;
-	width: 250px;
-	background-color: gray;
-	position: fixed;
-	top: 0;
-	right: 0;
-	margin-top: 57px;
-	transform: translateX(0);
-	transition: transform 0.3s ease;
-	}
-
-	.editor-sidebar.hidden {
-	transform: translateX(250px);
-	}
-
-	.sidebar-toggle {
-	position: absolute;
-	left: -20px;
-	top: 50%;
-	transform: translateY(-50%);
-	width: 20px;
-	height: 40px;
-	background-color: #333;
-	border: none;
-	cursor: pointer;
-	color: white;
-	font-size: 16px;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	}
-
-	/* Main content */
 	.editor-main {
-	margin-right: 250px;
-	padding: 20px;
-	transition: margin-right 0.3s ease;
+		margin-right: 400px;
+		flex: 1;
+		transition: margin-right 0.3s ease;
 	}
 
 	.editor-main.full {
-	margin-right: 0;
+		margin-right: 0px;
 	}
 
+	.preview-container {
+		width: 100%;
+		max-width: 1100px;
+		min-height: 600px;
+		margin: 0;
+		padding: 40px;
+		background: white;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+		outline: none;
+	}
+
+	.preview-container * {
+		font-family: 'Roboto', sans-serif !important;
+		font-size: 14px !important;
+		line-height: 1.6 !important;
+	}
+
+	.preview-container a {
+		color: #0366d6 !important;
+		text-decoration: underline !important;
+	}
+
+	.preview-container a:hover {
+		text-decoration: none !important;
+	}
+
+	.preview-container p {
+		margin-bottom: 1em;
+	}
+
+	.preview-container li {
+		margin-left: 20px;
+		list-style-type: disc;
+	}
+
+	.preview-container strong {
+		font-weight: 700 !important;
+	}
+
+	.preview-container em {
+		font-style: italic !important;
+	}
+
+	/* Sidebar styles */
+	.sidebar {
+		width: 300px;
+		height: 100vh;
+		background-color: gray;
+		position: fixed;
+		top: 0;
+		right: 0;
+		margin-top: 57px;
+		transition: transform 0.3s ease;
+		z-index: 1000;
+	}
+	.sidebar.closed {
+		transform: translateX(calc(100% - 20px));
+	}
+	.toggle-button {
+		position: absolute;
+		left: -5px;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 20px;
+		height: 60px;
+		background-color: #808080;
+		color: white;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		cursor: pointer;
+		border-top-left-radius: 5px;
+		border-bottom-left-radius: 5px;
+	}
 	.sidebar-content {
-	padding: 20px;
+		padding: 20px;
+		color: white;
+		overflow-y: auto;
+		height: calc(100% - 40px);
 	}
-
-	/* Media query for tablet and mobile: 768px and below */
-	@media (max-width: 768px) {
-		.initial-hidden {
-			transform: translateY(-200px) !important;
-		}
-
-		.preview-container {
-			width: auto;
-		}
-
-		.editor-sidebar {
-			top: 1px;
-			width: 100vw;
-			height: 200px;
-			transform: translateY(0);
-		}
-
-		.editor-sidebar.hidden {
-			transform: translateY(-200px);
-		}
-
-		.sidebar-toggle {
-			left: 0;
-			background-color: #333;
-			top: auto;
-			bottom: -30px;
-			width: 100vw;
-			height: 20px;
-		}
-
-		.editor-main {
-			margin-right: 0;
-			margin-top: 0;
-		}
-
-		.editor-main.full {
-			margin-top: 0;
-		}
-	}
-
 	</style>
 	{% endblock %}
